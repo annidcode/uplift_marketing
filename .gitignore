@@ -9,3 +9,6 @@ data/
 *.log
 .DS_Store
 .ipynb_checkpoints/
+clickhouse-datasource.zip
+plugins/
+superset_config.py
