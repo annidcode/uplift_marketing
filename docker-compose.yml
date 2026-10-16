@@ -76,18 +76,26 @@ services:
     volumes:
       - clickhouse_data:/var/lib/clickhouse
 
-  grafana:
-    image: grafana/grafana:10.4.0
+  superset:
+    image: apache/superset:3.1.0
     ports:
-      - "3001:3000"
+      - "8089:8088"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - SUPERSET_SECRET_KEY=my_secret_key_change_me
+      - SUPERSET_LOAD_EXAMPLES=no
+      - SUPERSET_CONFIG_PATH=/app/superset_config.py
     volumes:
-      - grafana_data:/var/lib/grafana
+      - superset_home:/app/superset_home
+      - ./superset_config.py:/app/superset_config.py
+    command: >
+      /bin/sh -c "
+      superset db upgrade &&
+      superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin &&
+      superset init &&
+      /usr/bin/run-server.sh
+      "
 
 volumes:
   postgres_data:
   clickhouse_data:
-  grafana_data:
-
+  superset_home:
